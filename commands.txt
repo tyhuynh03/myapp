@@ -1,0 +1,15 @@
+# Cài đặt các thư viện cần thiết
+pip install --no-cache-dir -r requirements.txt
+
+
+# 2 lệnh sau để tạo cơ sở dữ liệu và các bảng trong cơ sở dữ liệu
+python manage.py makemigrations 
+python manage.py migrate
+
+# Reset db (nên chạy sau khi đã thực hiện migrations)
+python manage.py flush --no-input
+
+
+
+# Chạy lệnh để khởi động server
+python manage.py runserver
