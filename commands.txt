@@ -7,8 +7,8 @@ python manage.py makemigrations
 python manage.py migrate
 
 # Reset db (nên chạy sau khi đã thực hiện migrations)
-python manage.py flush --no-input
 
+python manage.py flush --no-input
 
 
 # Chạy lệnh để khởi động server

@@ -68,12 +68,8 @@
                     <th>NAME</th>
                     <th>Barcode</th>
                     <th>Date Created</th>
-                    <th style="width: 50px;">SAP Vendor No</th>
                     <th>Vendor</th>
-                    <th>Số Chứng Nhận</th>
                     <th>Ngày Hết Hiệu Lực</th>
-                    <th>Tình Trạng</th>
-                    <th>Tình Trạng Báo Cáo</th>
                     <th>Mã Hồ Sơ</th>
                 </tr>
             </thead>
@@ -84,13 +80,9 @@
                     <td>{{ item.name }}</td>
                     <td>{{ item.barcode }}</td>
                     <td>{{ item.date_created }}</td>
-                    <td style="width: 50px;">{{ item.SAP_Vendor_No }}</td>
                     <td>{{ item.Vendor }}</td>
-                    <td>{{ item.so_chung_nhan }}</td>
                     <td>{{ item.ngay_het_hieu_luc }}</td>
-                    <td>{{ item.tinh_trang }}</td>
-                    <td>{{ item.tinh_trang_bao_cao }}</td>
-                    <td><a href="{% url 'open_folder' item.ma_ho_so %}">{{ item.ma_ho_so }}</a></td>
+                    <td><a href="#">{{ item.ma_ho_so }}</a></td>
 
                 </tr>
                 {% endfor %}
