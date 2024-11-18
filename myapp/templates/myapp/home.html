@@ -101,78 +101,205 @@
                 padding: 8px 15px;
             }
         }
+
+        .d-flex {
+            margin-left: 400px;
+            display: flex;
+            align-items: center;
+            /* Căn giữa theo chiều dọc */
+            margin-top: 10px;
+            /* Khoảng cách từ trên */
+            height: 100px;
+            /* Chiều cao của container */
+            width: 50%;
+            /* Chiều rộng của container là 100% */
+        }
+
+
+        /* Tùy chỉnh giao diện của input[type="file"] */
+        .custom-file-input {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 16px;
+
+            /* Viền màu bg-success */
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: white;
+            /* Nền trắng */
+            color: #28a745;
+            /* Màu chữ giống màu viền */
+            font-weight: bold;
+            /* Chữ đậm */
+        }
+
+        /* Thay đổi giao diện nút "Chọn tệp" khi người dùng chọn tệp */
+        .custom-file-input::file-selector-button {
+            background-color: #28a745;
+            /* Màu nền bg-success */
+            color: white;
+            /* Màu chữ trắng */
+            padding: 8px 20px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            /* Không có viền cho button */
+        }
+
+        /* Khi hover trên nút "Chọn tệp" */
+        .custom-file-input::file-selector-button:hover {
+            background-color: #218838;
+            /* Màu xanh tối hơn khi hover */
+        }
+
+        /* Style để input không nổi bật khi không có focus */
+        .custom-file-input:focus {
+            outline: none;
+            border-color: #218838;
+            /* Thay đổi màu viền khi focus */
+        }
+
+        .file-input {
+            /* căn giữa */
+            margin-left: 550px;
+        }
+
+        /* Tùy chỉnh viền và màu chữ cho input search */
+        .custom-search {
+            border: 2px solid #28a745;
+            /* Viền màu bg-success */
+            color: #28a745;
+            /* Chữ màu bg-success */
+            background-color: white;
+            /* Nền trắng */
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        /* Thay đổi viền khi focus vào input */
+        .custom-search:focus {
+            outline: none;
+            /* Loại bỏ outline mặc định */
+            border-color: #218838;
+            /* Thay đổi viền khi focus */
+            box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+            /* Thêm hiệu ứng shadow cho viền */
+        }
+
+        /* Khi người dùng nhập dữ liệu, có thể thêm hiệu ứng cho placeholder */
+        .custom-search::placeholder {
+            color: #000000;
+            /* Màu chữ placeholder tương tự màu viền */
+            opacity: 0.7;
+            /* Màu placeholder hơi mờ một chút */
+        }
     </style>
 </head>
 
-<body>
+<body style="padding-top: 80px;">
+
     {% if message %}
     <div class="alert alert-primary" role="alert">
         {{ message }}
     </div>
     {% endif %}
-    <h1 class="title">Dữ liệu từ file XLSX</h1>
+    <!-- <h1 class="title">Dữ liệu từ file XLSX</h1>
     <h3 style="text-align: center;">Tìm Kiếm Dữ Liệu</h1>
 
-        <h1>Tải lên file XLSX</h1>
-        <form method="post" action="{% url 'upload_xlsx' %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input type="file" name="file" accept=".xlsx" required>
-            <button type="submit">Tải lên</button>
-        </form>
-        <form method="POST" action="{% url  'search' %}" class="search" style="text-align: center;">
-            {% csrf_token %}
-            <input type="text" name="search" placeholder="Nhập ARTICLE để tìm kiếm..." value="{{ search}}">
-            <button type="submit">Tìm kiếm</button>
-        </form>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ARTICLE</th>
-                    <th>NAME</th>
-                    <th>Barcode</th>
-                    <th>Date Created</th>
-                    <th>Vendor</th>
-                    <th>Ngày Hết Hiệu Lực</th>
-                    <th>Mã Hồ Sơ</th>
-                </tr>
-            </thead>
-            <tbody class="table-group-divider">
-                {% for item in page_obj %}
-                <tr>
-                    <th scope="row">{{ item.article }}</td>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.barcode }}</td>
-                    <td>{{ item.date_created }}</td>
-                    <td>{{ item.Vendor }}</td>
-                    <td>{{ item.ngay_het_hieu_luc }}</td>
-                    <td><a href="{% url 'open_folder' item.ma_ho_so %}?article={{ item.article }}">
+        <h1>Tải lên file XLSX</h1> -->
+    <nav class="navbar navbar-expand-lg bg-success fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" href="#">My Website</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url  'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- <form class="d-flex" role="search">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+    </form> -->
+    <form class="file-input" method="post" action="{% url 'upload_xlsx' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <input type="file" name="file" id="file" accept=".xlsx" class="custom-file-input" required>
+        <button class="btn btn-outline-success" type="submit">Tải lên</button>
+    </form>
+    <form class="d-flex" method="POST" action="{% url  'search' %}" class="search" style="text-align: center;">
+        {% csrf_token %}
+        <input class="form-control me-2 custom-search" type="text" name="search"
+            placeholder="Nhập ARTICLE để tìm kiếm..." value="{{ search}}">
+        <button class="btn btn-outline-success" type="submit">Tìm kiếm</button>
+    </form>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ARTICLE</th>
+                <th>NAME</th>
+                <th>Barcode</th>
+                <th>Date Created</th>
+                <th>Vendor</th>
+                <th>Ngày Hết Hiệu Lực</th>
+                <th>Mã Hồ Sơ</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            {% for item in page_obj %}
+            <tr>
+                <th scope="row">{{ item.article }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.barcode }}</td>
+                <td>{{ item.date_created }}</td>
+                <td>{{ item.Vendor }}</td>
+                <td>{{ item.ngay_het_hieu_luc }}</td>
+                <td><a href="{% url 'open_folder' item.ma_ho_so %}?article={{ item.article }}">
                         {{item.ma_ho_so}}</a></td>
 
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="pagination">
-            <span class="step-links">
-                {% if page_obj.has_previous %}
-                <a class="pagination-link" href="?page=1">&laquo; First</a>
-                <a class="pagination-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+            <a class="pagination-link" href="?page=1">&laquo; First</a>
+            <a class="pagination-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            {% endif %}
 
-                <span class="current">
-                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-                </span>
-
-                {% if page_obj.has_next %}
-                <a class="pagination-link" href="?page={{ page_obj.next_page_number }}">Next</a>
-                <a class="pagination-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
-                {% endif %}
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
             </span>
-        </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-            crossorigin="anonymous"></script>
+            {% if page_obj.has_next %}
+            <a class="pagination-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a class="pagination-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>
