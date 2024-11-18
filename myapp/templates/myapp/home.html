@@ -145,7 +145,8 @@
                     <td>{{ item.date_created }}</td>
                     <td>{{ item.Vendor }}</td>
                     <td>{{ item.ngay_het_hieu_luc }}</td>
-                    <td><a href="#">{{ item.ma_ho_so }}</a></td>
+                    <td><a href="{% url 'open_folder' item.ma_ho_so %}?article={{ item.article }}">
+                        {{item.ma_ho_so}}</a></td>
 
                 </tr>
                 {% endfor %}

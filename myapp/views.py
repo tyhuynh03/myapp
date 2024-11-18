@@ -110,7 +110,6 @@ def home(request):
 def search(request):
     if request.method == 'POST':
         search = request.POST['search']
-        print(search)
         products = Product.objects.filter(article__icontains=search)
         return render(request, 'myapp/home.html', {'page_obj': products})
     return render(request, 'myapp/home.html')
@@ -134,7 +133,8 @@ FOLDER_MAP = {
     "22": "22-106 Đồ Uống, thuốc lá",
     "23": "23-106 Bánh kẹo"
 }
-def find_folder(folder_name, base_dirs=[r'\\masan.local\12. An Ninh Va Thanh Tra\99.12.1 Ho So Chat Luong\99.12.1.2PCU\\1. Hồ sơ chất lượng_Thực phẩm']):
+def find_folder(folder_name, base_dirs=[r'D:\\']):
+# def find_folder(folder_name, base_dirs=[r'\\masan.local\12. An Ninh Va Thanh Tra\99.12.1 Ho So Chat Luong\99.12.1.2PCU\\1. Hồ sơ chất lượng_Thực phẩm']):
     """
     Tìm thư mục theo tên file, chỉ giới hạn tìm trong thư mục được xác định từ mã đầu của tên file.
     """
@@ -163,22 +163,29 @@ def find_folder(folder_name, base_dirs=[r'\\masan.local\12. An Ninh Va Thanh Tra
     return None
 
 
-
+def find_folder_in_subfolder(parent_folder, subfolder_name):
+    """
+    Tìm thư mục con trong một thư mục cấp trên
+    """
+    for root, dirs, files in os.walk(parent_folder):
+        if subfolder_name in dirs:
+            return os.path.join(root, subfolder_name)
+    return None
 
 
 def open_folder(request,ma_ho_so):
+    article = request.GET.get('article')
+    products = Product.objects.filter(article__icontains=article)
     # Bắt đầu đo thời gian tìm kiếm
-    start_time = time.time()
-    
+    start_time = time.time()                                    
     # Đầu tiên thử tìm thư mục với tên đầy đủ
     prefix_name = '.'.join(ma_ho_so.split('.')[:2])
+    
     folder_path = find_folder(prefix_name)
-    
-    # Nếu không tìm thấy, thử tìm với tên ngắn hơn
-    # if not folder_path:
-    #     prefix_name = '.'.join(ma_ho_so.split('.')[:2])  # Lấy 2 phần đầu của tên (ví dụ 23.220040)
-    #     folder_path = find_folder(prefix_name)
-    
+    # nếu tìm thấy thư mục cấp 2 thì tìm tiếp trong thư mục cấp 2
+    if folder_path:
+        folder_full_name = ma_ho_so        
+        folder_path = find_folder_in_subfolder(folder_path, folder_full_name)
     # Kết thúc đo thời gian tìm kiếm
     search_time = time.time() - start_time
     # Kiểm tra kết quả và mở thư mục nếu tìm thấy
@@ -187,4 +194,4 @@ def open_folder(request,ma_ho_so):
         message = f"Mở thư mục thành công! Đường dẫn: {folder_path}. Thời gian tìm kiếm: {search_time:.4f} giây."
     else:
         message = f"Không tìm thấy thư mục! Thời gian tìm kiếm: {search_time:.4f} giây."
-    return render(request, 'myapp/read_xlsx.html', {'message': message})
+    return render(request, 'myapp/home.html', {'page_obj': products, 'message': message})
