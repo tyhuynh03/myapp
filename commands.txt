@@ -7,6 +7,7 @@ python manage.py makemigrations
 python manage.py migrate
 
 # Reset db (nên chạy sau khi đã thực hiện migrations)
+# Reset db (nên chạy sau khi đã thực hiện migrations)
 
 python manage.py flush --no-input
 

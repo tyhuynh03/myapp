@@ -6,6 +6,7 @@ class Product(models.Model):
     barcode = models.CharField(max_length=50)
     date_created = models.CharField(max_length=50)   
     Vendor = models.CharField(max_length=200)
+    Vendor_name = models.CharField(max_length=200, default="Default Vendor Name")
     ngay_het_hieu_luc = models.CharField(max_length=50)
     ma_ho_so = models.CharField(max_length=50)
     def __str__(self):

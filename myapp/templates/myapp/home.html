@@ -211,7 +211,7 @@
         <h1>Tải lên file XLSX</h1> -->
     <nav class="navbar navbar-expand-lg bg-success fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand text-white" href="#">My Website</a>
+            <a class="navbar-brand text-white" href="#">Võ Văn Tuấn Đạt_QLCL</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -248,7 +248,13 @@
     <form class="d-flex" method="POST" action="{% url  'search' %}" class="search" style="text-align: center;">
         {% csrf_token %}
         <input class="form-control me-2 custom-search" type="text" name="search"
-            placeholder="Nhập ARTICLE để tìm kiếm..." value="{{ search}}">
+            placeholder="Nhập mã vật tư để tìm kiếm HSCB..." value="{{ search}}">
+        <button class="btn btn-outline-success" type="submit">Tìm kiếm</button>
+    </form>
+    <form class="d-flex" method="POST" action="{% url  'search' %}" class="search" style="text-align: center;">
+        {% csrf_token %}
+        <input class="form-control me-2 custom-search" type="text" name="search"
+            placeholder="Nhập Mã NCC để tìm GĐĐK ATTP NCC" value="{{ search}}">
         <button class="btn btn-outline-success" type="submit">Tìm kiếm</button>
     </form>
     <table class="table">
@@ -259,6 +265,7 @@
                 <th>Barcode</th>
                 <th>Date Created</th>
                 <th>Vendor</th>
+                <th>Vendor_Name</th>
                 <th>Ngày Hết Hiệu Lực</th>
                 <th>Mã Hồ Sơ</th>
             </tr>
@@ -271,6 +278,7 @@
                 <td>{{ item.barcode }}</td>
                 <td>{{ item.date_created }}</td>
                 <td>{{ item.Vendor }}</td>
+                <td>{{ item.Vendor_name }}</td>
                 <td>{{ item.ngay_het_hieu_luc }}</td>
                 <td><a href="{% url 'open_folder' item.ma_ho_so %}?article={{ item.article }}">
                         {{item.ma_ho_so}}</a></td>

@@ -10,13 +10,14 @@ from django.core.paginator import Paginator
 
 ############################################################################################
 column_keywords = {
-    'ARTICLE': ['Article'],
-    'NAME': ['Name','Description','Article Description'],
+    'ARTICLE': ['Article','Article','No SAP','Mã hàng hóa','tên','Article '],
+    'NAME': ['Name','Description','Article Description','Article Description','Tên hàng hóa'],
     'BARCODE': ['Barcode No.','Barcode','barcode'],
-    'date_creat': ['Date creat','Ngày tạo','date creat'],
-    'VENDOR': ['Vendor'],
-    'Ngày hết hiệu lực': ['Ngày hết hiệu lực','Ngày hết hiệu lực\n(Tháng/ngày/năm)'],
-    'Mã hồ sơ': ['Mã hồ sơ','Mã số hồ sơ','Mã số hồ sơ.1','Mã hồ sơ.1',],
+    'date_creat': ['Date creat','Ngày tạo','date creat','Số CN hồ sơ','STT'],
+    'VENDOR': ['Vendor','Vendor SAP','Mã NCC','SAP Vendor No.'],
+    'Vendor name': ['Tên NCC','Tên NCC'],
+    'Ngày hết hiệu lực': ['Ngày hết hiệu lực','Ngày hết hiệu lực\n(Tháng/ngày/năm)','Ngày hết hiệu lực','Ngày HHL','Tình trạng hiệu lực','Số CB/ Số TCCS'],
+    'Mã hồ sơ': ['Mã hồ sơ','Mã số hồ sơ','Mã số hồ sơ.1','Mã hồ sơ.1','Mã hồ sơ ','Mã hóa hồ sơ lưu'],
 }
 # Danh sách các cột bắt buộc trong model
 required_columns = list(column_keywords.keys())
@@ -69,9 +70,9 @@ def upload_xlsx(request):
         if 'Mã hồ sơ' in df.columns and 'Mã hồ sơ.1' in df.columns:
             df = df.drop(columns=['Mã hồ sơ'])
             df = map_columns(df, column_keywords)
-
+        
         # Xử lý cột ARTICLE để loại bỏ phần '.0'
-        df['ARTICLE'] = df['ARTICLE'].astype(str).str.replace('.0', '', regex=False)
+        # df['ARTICLE'] = df['ARTICLE'].astype(str).str.replace('.0', '', regex=False)
         data = df.to_dict(orient='records')
         #Lưu dữ liệu vào model
         for item in data:
@@ -83,6 +84,7 @@ def upload_xlsx(request):
                         'barcode': item['BARCODE'],
                         'date_created': item['date_creat'],
                         'Vendor': item['VENDOR'],
+                        'Vendor_name' : item['Vendor name'],
                         'ngay_het_hieu_luc': item['Ngày hết hiệu lực'],
                         'ma_ho_so': item['Mã hồ sơ'],
                     }
@@ -127,14 +129,14 @@ FOLDER_MAP = {
     "11": "11-105 Tươi sống",
     "12": "12-102 Hàng Mát",
     "13": "13-101 Đông lạnh",
-    "14": "14-103 Bánh mì",
+    "14": "14-103 Bánh mỳ",
     "15": "15-103 Chế Biến",
     "21": "21-104 Thực phẩm khô",
     "22": "22-106 Đồ Uống, thuốc lá",
     "23": "23-106 Bánh kẹo"
 }
-def find_folder(folder_name, base_dirs=[r'D:\\']):
-# def find_folder(folder_name, base_dirs=[r'\\masan.local\12. An Ninh Va Thanh Tra\99.12.1 Ho So Chat Luong\99.12.1.2PCU\\1. Hồ sơ chất lượng_Thực phẩm']):
+# def find_folder(folder_name, base_dirs=[r'D:\\']):
+def find_folder(folder_name, base_dirs=[r'\\masan.local\12. An Ninh Va Thanh Tra\99.12.1 Ho So Chat Luong\99.12.1.2PCU\1. Hồ sơ chất lượng_Thực phẩm']):
     """
     Tìm thư mục theo tên file, chỉ giới hạn tìm trong thư mục được xác định từ mã đầu của tên file.
     """
@@ -150,7 +152,7 @@ def find_folder(folder_name, base_dirs=[r'D:\\']):
     
     # Kiểm tra nếu đường dẫn tồn tại
     if not os.path.exists(search_path):
-        return "Thư mục chính xác không tồn tại!"
+        print(search_path)
 
     # Tìm kiếm trong thư mục cụ thể
     for root, dirs, files in os.walk(search_path, topdown=True):
@@ -185,13 +187,18 @@ def open_folder(request,ma_ho_so):
     # nếu tìm thấy thư mục cấp 2 thì tìm tiếp trong thư mục cấp 2
     if folder_path:
         folder_full_name = ma_ho_so        
-        folder_path = find_folder_in_subfolder(folder_path, folder_full_name)
+        folder_path_v1 = find_folder_in_subfolder(folder_path, folder_full_name)
     # Kết thúc đo thời gian tìm kiếm
     search_time = time.time() - start_time
     # Kiểm tra kết quả và mở thư mục nếu tìm thấy
+    if folder_path_v1:
+        os.startfile(folder_path_v1)
+        message = f"Mở thư mục thành công! Đường dẫn: {folder_path_v1}. Thời gian tìm kiếm: {search_time:.4f} giây."
     if folder_path:
         os.startfile(folder_path)
-        message = f"Mở thư mục thành công! Đường dẫn: {folder_path}. Thời gian tìm kiếm: {search_time:.4f} giây."
+        message = f"Mở thư mục thành công! Đường dẫn: {folder_path_v1}. Thời gian tìm kiếm: {search_time:.4f} giây."
     else:
         message = f"Không tìm thấy thư mục! Thời gian tìm kiếm: {search_time:.4f} giây."
     return render(request, 'myapp/home.html', {'page_obj': products, 'message': message})
+
+
