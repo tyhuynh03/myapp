@@ -251,10 +251,11 @@
             placeholder="Nhập mã vật tư để tìm kiếm HSCB..." value="{{ search}}">
         <button class="btn btn-outline-success" type="submit">Tìm kiếm</button>
     </form>
-    <form class="d-flex" method="POST" action="{% url  'search' %}" class="search" style="text-align: center;">
+    <form class="d-flex" method="POST" action="{% url  'find_folder_by_vendor' %}" class="search"
+        style="text-align: center;">
         {% csrf_token %}
-        <input class="form-control me-2 custom-search" type="text" name="search"
-            placeholder="Nhập Mã NCC để tìm GĐĐK ATTP NCC" value="{{ search}}">
+        <input class="form-control me-2 custom-search" type="text" name="vendor"
+            placeholder="Nhập Mã NCC để tìm GĐĐK ATTP NCC" value="{{ vendor}}">
         <button class="btn btn-outline-success" type="submit">Tìm kiếm</button>
     </form>
     <table class="table">

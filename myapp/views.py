@@ -202,3 +202,42 @@ def open_folder(request,ma_ho_so):
     return render(request, 'myapp/home.html', {'page_obj': products, 'message': message})
 
 
+### function find folder by vendor 
+from django.shortcuts import render
+import re 
+def find_folder_by_vendor(request):
+    if request.method == "POST":
+        vendor = request.POST.get('vendor')  # Lấy giá trị từ input có name="vendor"
+        # bỏ khoảng trắng ở đầu và cuối chuỗi
+        vendor = vendor.strip()
+        products = Product.objects.filter(Vendor=vendor)
+        vendor_name = products[0].Vendor_name
+    folder_path = support_find_folder_by_venfor(vendor, vendor_name)
+    print(folder_path)   
+    if folder_path:
+        os.startfile(folder_path)
+        message = f"Mở thư mục thành công! Đường dẫn: {folder_path}"
+    else:
+        message = f"Không tìm thấy thư mục cho nhà cung cấp: {vendor_name} - {vendor}"
+
+
+    return render(request, 'myapp/home.html')
+
+def support_find_folder_by_venfor(vendor_code, vendor_name,base_dir=[r"D:\GIẤY CHỨNG NHẬN ATTP-NCC"]):
+    try:
+        for folder in os.listdir(base_dir[0]):
+            folder_path = os.path.join(base_dir[0], folder)
+            number = re.findall(r'\d+', folder)
+            print(number)
+            if '11' in number:
+                print('thư mục chứa 11')
+                if os.path.isdir(folder_path) and vendor_name in folder:
+                    return folder_path
+            else:
+                if os.path.isdir(folder_path) and vendor_code in folder:
+                    return folder_path
+    except FileNotFoundError as e:
+        return f"Không tìm thấy thư mục: {base_dir[0]}"
+    except PermissionError:
+        return f"Không có quyền truy cập thư mục: {base_dir[0]}"
+    return f"Không tìm thấy thư mục cho nhà cung cấp: {vendor_name} - {vendor_code}"
