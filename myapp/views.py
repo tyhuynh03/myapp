@@ -72,7 +72,7 @@ def upload_xlsx(request):
             df = map_columns(df, column_keywords)
         
         # Xử lý cột ARTICLE để loại bỏ phần '.0'
-        # df['ARTICLE'] = df['ARTICLE'].astype(str).str.replace('.0', '', regex=False)
+        df['ARTICLE'] = df['ARTICLE'].astype(str).str.replace('.0', '', regex=False)
         data = df.to_dict(orient='records')
         #Lưu dữ liệu vào model
         for item in data:
@@ -126,6 +126,7 @@ import os
 import time
 # Bản đồ mã thư mục với tên thư mục
 FOLDER_MAP = {
+    # Thực phẩm
     "11": "11-105 Tươi sống",
     "12": "12-102 Hàng Mát",
     "13": "13-101 Đông lạnh",
@@ -133,26 +134,56 @@ FOLDER_MAP = {
     "15": "15-103 Chế Biến",
     "21": "21-104 Thực phẩm khô",
     "22": "22-106 Đồ Uống, thuốc lá",
-    "23": "23-106 Bánh kẹo"
+    "23": "23-106 Bánh kẹo",
+    # Phi thực phẩm 
+    "24": "24 - Mỹ phẩm chăm sóc cá nhân",
+    "25": "25 - Hóa phẩm",
+    "26": "26 - Dệt may",
+    "41": "41 - Gia dụng",
+    "42": "42 - Điện gia dụng",
+    "43": "43 - Mũ bảo hiểm",
+    "45": "45 - Đồ chơi",
+    "46": "46 - Đèn led huỳnh quang các loại",
+    "47": "47 - Giải trí thể thao",
+    "50": "50 - VAT TU TIEU HAO",
+
+
 }
 # def find_folder(folder_name, base_dirs=[r'D:\\']):
-def find_folder(folder_name, base_dirs=[r'\\masan.local\12. An Ninh Va Thanh Tra\99.12.1 Ho So Chat Luong\99.12.1.2PCU\1. Hồ sơ chất lượng_Thực phẩm']):
+def find_folder(folder_name, base_dirs=[r'\\masan.local\12. An Ninh Va Thanh Tra\99.12.1 Ho So Chat Luong\99.12.1.2PCU']):
     """
-    Tìm thư mục theo tên file, chỉ giới hạn tìm trong thư mục được xác định từ mã đầu của tên file.
+    Tìm thư mục theo tên, giới hạn trong loại thư mục Thực phẩm hoặc Phi thực phẩm.
+    
+    Args:
+        folder_name (str): Tên thư mục cần tìm.
+        base_dirs (list): Danh sách đường dẫn cơ sở để tìm kiếm.
+    
+    Returns:
+        str: Đường dẫn thư mục nếu tìm thấy, hoặc thông báo lỗi nếu không tìm thấy.
     """
-    # Xác định mã thư mục từ phần đầu của tên file
+    if not folder_name:
+        return "Tên thư mục không được để trống."
+    
+    # Lấy mã thư mục từ tên
     main_code = folder_name.split('.')[0][:2]
-    main_folder = FOLDER_MAP.get(main_code)  # Lấy tên thư mục chính dựa trên mã đầu tiên
+    main_folder = FOLDER_MAP.get(main_code)
     
     if main_folder is None:
-        return "Mã không hợp lệ hoặc không có trong danh sách thư mục"
+        return "Mã không hợp lệ hoặc không có trong danh sách thư mục."
     
-    # Xây dựng đường dẫn thư mục chính xác để tìm kiếm
-    search_path = os.path.join(base_dirs[0], main_folder)
+    # Xác định đường dẫn cơ sở phù hợp
+    if main_code in ["11", "12", "13", "14", "15", "21", "22", "23"]:  # Thực phẩm
+        adjusted_base_dir = os.path.join(base_dirs[0], "1. Hồ sơ chất lượng_Thực phẩm")
+    elif main_code in ["24", "25", "26", "41", "42", "43", "45", "46", "47", "50"]:  # Phi thực phẩm
+        adjusted_base_dir = os.path.join(base_dirs[0], "2. Hồ sơ chất lượng_Phi thực phẩm")
+    else:
+        return "Mã thư mục không thuộc Thực phẩm hoặc Phi thực phẩm."
     
-    # Kiểm tra nếu đường dẫn tồn tại
+    # Xây dựng đường dẫn chính xác để tìm kiếm
+    search_path = os.path.join(adjusted_base_dir, main_folder)
     if not os.path.exists(search_path):
-        print(search_path)
+        return f"Thư mục không tồn tại: {search_path}"
+    
 
     # Tìm kiếm trong thư mục cụ thể
     for root, dirs, files in os.walk(search_path, topdown=True):
@@ -194,6 +225,7 @@ def open_folder(request,ma_ho_so):
     if folder_path_v1:
         os.startfile(folder_path_v1)
         message = f"Mở thư mục thành công! Đường dẫn: {folder_path_v1}. Thời gian tìm kiếm: {search_time:.4f} giây."
+        return render(request, 'myapp/home.html', {'page_obj': products, 'message': message})
     if folder_path:
         os.startfile(folder_path)
         message = f"Mở thư mục thành công! Đường dẫn: {folder_path_v1}. Thời gian tìm kiếm: {search_time:.4f} giây."
@@ -205,39 +237,51 @@ def open_folder(request,ma_ho_so):
 ### function find folder by vendor 
 from django.shortcuts import render
 import re 
+from unidecode import unidecode
+BASE_DIR = r'\\masan.local\12. An Ninh Va Thanh Tra\99.12.1 Ho So Chat Luong\99.12.1.2PCU\1. Hồ sơ chất lượng_Thực phẩm\GIẤY CHỨNG NHẬN ATTP-NCC'
 def find_folder_by_vendor(request):
+    found = False
     if request.method == "POST":
         vendor = request.POST.get('vendor')  # Lấy giá trị từ input có name="vendor"
         # bỏ khoảng trắng ở đầu và cuối chuỗi
         vendor = vendor.strip()
-        products = Product.objects.filter(Vendor=vendor)
-        vendor_name = products[0].Vendor_name
-    folder_path = support_find_folder_by_venfor(vendor, vendor_name)
-    print(folder_path)   
-    if folder_path:
-        os.startfile(folder_path)
-        message = f"Mở thư mục thành công! Đường dẫn: {folder_path}"
-    else:
-        message = f"Không tìm thấy thư mục cho nhà cung cấp: {vendor_name} - {vendor}"
+    # Chuẩn hóa chuỗi nhập từ người dùng
+    vendor_normalized = unidecode(vendor.strip().lower())
 
+    # Kiểm tra thư mục gốc có tồn tại
+    if os.path.exists(BASE_DIR):
+        for folder in os.listdir(BASE_DIR):
+            folder_path = os.path.join(BASE_DIR, folder)
+            if os.path.isdir(folder_path):  # Chỉ kiểm tra thư mục
+                # Chuẩn hóa tên thư mục
+                folder_normalized = unidecode(folder.strip().lower())
 
-    return render(request, 'myapp/home.html')
+                # Sử dụng `re.search` để tìm từ khóa trong tên thư mục
+                if re.search(re.escape(vendor_normalized), folder_normalized):
+                    print(f"Thư mục đã tìm thấy: {folder_path} ")
+                    os.startfile(folder_path)
+                    found = True
+    if not False:
+        print('Không tìm thấy thư mục')
+    
 
-def support_find_folder_by_venfor(vendor_code, vendor_name,base_dir=[r"D:\GIẤY CHỨNG NHẬN ATTP-NCC"]):
-    try:
-        for folder in os.listdir(base_dir[0]):
-            folder_path = os.path.join(base_dir[0], folder)
-            number = re.findall(r'\d+', folder)
-            print(number)
-            if '11' in number:
-                print('thư mục chứa 11')
-                if os.path.isdir(folder_path) and vendor_name in folder:
-                    return folder_path
-            else:
-                if os.path.isdir(folder_path) and vendor_code in folder:
-                    return folder_path
-    except FileNotFoundError as e:
-        return f"Không tìm thấy thư mục: {base_dir[0]}"
-    except PermissionError:
-        return f"Không có quyền truy cập thư mục: {base_dir[0]}"
-    return f"Không tìm thấy thư mục cho nhà cung cấp: {vendor_name} - {vendor_code}"
+    return render(request, 'myapp/home.html' )
+
+# def support_find_folder_by_venfor(vendor_code, vendor_name,base_dir=[]):
+#     try:
+#         for folder in os.listdir(base_dir[0]):
+#             folder_path = os.path.join(base_dir[0], folder)
+#             number = re.findall(r'\d+', folder)
+#             print(number)
+#             if '11' in number:
+#                 print('thư mục chứa 11')
+#                 if os.path.isdir(folder_path) and vendor_name in folder:
+#                     return folder_path
+#             else:
+#                 if os.path.isdir(folder_path) and vendor_code in folder:
+#                     return folder_path
+#     except FileNotFoundError as e:
+#         return f"Không tìm thấy thư mục: {base_dir[0]}"
+#     except PermissionError:
+#         return f"Không có quyền truy cập thư mục: {base_dir[0]}"
+#     return f"Không tìm thấy thư mục cho nhà cung cấp: {vendor_name} - {vendor_code}"
